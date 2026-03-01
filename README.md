@@ -1,1 +1,1 @@
-T3COIN AND NFTS
+T3Coin and NFTs
