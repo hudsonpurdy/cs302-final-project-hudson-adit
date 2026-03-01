@@ -13,10 +13,12 @@ class User:
 
 
 class Block:
-    def __init__(self, index, data, previous_block_hash):
+    def __init__(self, index, sender, receiver, amount, previous_block_hash):
         self.index = index
         self.timestamp = str(datetime.now())
-        self.data = data
+        self.sender = sender
+        self.receiver = receiver
+        self.amount = amount
         self.prev_hash = previous_block_hash
         self.nonce = 0
         self.hash = self.calculate_hash()
@@ -25,7 +27,9 @@ class Block:
         block_data = {
             "index":self.index,
             "timestamp":self.timestamp,
-            "data":self.data,
+            "sender":self.sender,
+            "receiver":self.receiver,
+            "amount":self.amount,
             "previous_hash":self.prev_hash,
             "nonce":self.nonce
         }
@@ -43,25 +47,44 @@ class Block:
     
 class Blockchain:
     def __init__(self):
+        self.users = {"SYSTEM":User("SYSTEM")}
         self.chain = [self.create_genesis_block()]
+        self.users["SYSTEM"].balance = 999999999999999999999
+
     
     def create_genesis_block(self):
-        block = Block(0, "Genesis Block Created", "0")
+        block = Block(0, "None", "None", 0, "0")
         block.mine()
         return block
     
     def get_latest_block(self):
         return self.chain[-1]
     
-    def add_block(self, data):
+    def add_user(self, username):
+        if username not in self.users:
+            self.users[username] = User(username)
+
+    def print_balances(self):
+        for user in self.users:
+            print(user + ": " + str(self.users[user].balance))
+    
+    def add_block(self, sender, receiver, amount):
+        if sender not in self.users or receiver not in self.users:
+            print("Sender or receiver does not exist.")
+            return
+
         previous_block = self.get_latest_block()
-        new_block = Block(previous_block.index+1, data, previous_block.hash)
+        new_block = Block(previous_block.index+1, sender, receiver, amount, previous_block.hash)
         new_block.mine()
         if new_block.hash.startswith("67"):
             self.chain.append(new_block)
             print("Valid block added.")
         else:
             print("Invalid block not added")
+            return
+
+        self.users[sender].balance -= amount
+        self.users[receiver].balance += amount
 
     def validate_block(self, block):
         if block.hash != block.calculate_hash():
@@ -93,15 +116,19 @@ class Blockchain:
     def print_chain(self):
         for block in self.chain:
             print("Block Index: " + str(block.index))
-            print("Data: " + str(block.data))
+            print("Sender: " + str(block.sender))
+            print("Receiver: " + str(block.receiver))
+            print("Amount Sent: " + str(block.amount))
             print("Hash: " + str(block.hash))
             print("Timestamp: " + str(block.timestamp))
             print("--------")
 
 chain = Blockchain()
-chain.add_block("huds0n mined 30 chunguscoin")
-chain.add_block("huds0n transfered 30 chunguscoin to 4d1t")
-chain.add_block("4d1t transfered 10 chunguscoin to j34n_s4l4c")
+chain.add_user("ADIT")
+chain.add_user("HUDSON")
+chain.add_block("SYSTEM", "ADIT", 200)
+chain.add_block("ADIT", "HUDSON", 100)
 
 chain.print_chain()
 chain.validate_chain()
+chain.print_balances()
