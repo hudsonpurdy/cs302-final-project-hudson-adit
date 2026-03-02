@@ -45,12 +45,23 @@ class Block:
             self.nonce += 1
             self.hash = self.calculate_hash()
     
+
+class NFT:
+    def __init__(self, token, owner, url):
+        self.token = token
+        self.owner = owner
+        self.url = url
+
 class Blockchain:
     def __init__(self):
         self.users = {"SYSTEM":User("SYSTEM")}
         self.chain = [self.create_genesis_block()]
         self.users["SYSTEM"].balance = 999999999999999999999
-
+        self.nftlist = {
+            "67" : NFT("67", "HUDSON", "3toadbanana.github.io/nftdata/hudson1"),
+            "124" : NFT("124", "HUDSON", "3toadbanana.github.io/nftdata/hudson2"),
+            "27" : NFT("27", "ADIT", "3toadbanana.github.io/nftdata/adit1")
+        }
     
     def create_genesis_block(self):
         block = Block(0, "None", "None", 0, "0")
@@ -68,7 +79,7 @@ class Blockchain:
         for user in self.users:
             print(user + ": " + str(self.users[user].balance))
     
-    def add_block(self, sender, receiver, amount):
+    def add_block(self, sender, receiver, amount, token=None, priv_key=None):
         if sender not in self.users or receiver not in self.users:
             print("Sender or receiver does not exist.")
             return
@@ -85,6 +96,11 @@ class Blockchain:
 
         self.users[sender].balance -= amount
         self.users[receiver].balance += amount
+
+        if token in self.nftlist and self.nftlist[token].owner == receiver and priv_key == self.users[receiver].private_key:
+            self.nftlist[token].owner = sender
+
+        return
 
     def validate_block(self, block):
         if block.hash != block.calculate_hash():
@@ -123,6 +139,33 @@ class Blockchain:
             print("Timestamp: " + str(block.timestamp))
             print("--------")
 
+    def mint_nft(self, owner, url, token):
+        if token in self.nftlist:
+            print(f"Error: Token {token} already exists!")
+            return False
+        
+        newNFT = NFT(token, owner, url)
+        self.nftlist[token] = newNFT
+        return True
+
+    def get_nft(self, id):
+        return self.nftlist.get(id)
+
+    def get_user_nfts(self, user):
+        if user not in self.users:
+            print(f"Error: User {user} is not a valid user!")
+            return False
+        
+        nfts = [{"id": tid, "data": info.url, } for tid, info in self.nftlist.items() if info.owner == user]
+        
+        if len(nfts) == 0:
+            print(f"Error: User {user} has no tokens!") 
+
+        else: 
+            print(user + "'s NFTs:", nfts)
+
+        return nfts
+
 chain = Blockchain()
 chain.add_user("ADIT")
 chain.add_user("HUDSON")
@@ -132,3 +175,11 @@ chain.add_block("ADIT", "HUDSON", 100)
 chain.print_chain()
 chain.validate_chain()
 chain.print_balances()
+
+chain.mint_nft("JEAN", "3toadbanana.github.io/nftdata/jean1", 41)
+
+chain.get_user_nfts("HUDSON")
+chain.get_user_nfts("ADIT")
+chain.add_block("ADIT", "HUDSON", 20, "67", "key")
+chain.get_user_nfts("HUDSON")
+chain.get_user_nfts("ADIT")
