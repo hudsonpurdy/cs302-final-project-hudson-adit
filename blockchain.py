@@ -1,5 +1,6 @@
 from user import User
 from block import Block
+from nft import NFT
 
 class Blockchain:
     def __init__(self):
