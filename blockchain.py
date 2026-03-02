@@ -1,56 +1,5 @@
-from datetime import datetime
-import json
-from Crypto.Hash import SHA256
-
-class User:
-    def __init__(self, username):
-        self.username = username
-        self.balance = 0
-        self.private_key = self.compute_private_key()
-
-    def compute_private_key(self):
-        return "key"
-
-
-class Block:
-    def __init__(self, index, sender, receiver, amount, previous_block_hash):
-        self.index = index
-        self.timestamp = str(datetime.now())
-        self.sender = sender
-        self.receiver = receiver
-        self.amount = amount
-        self.prev_hash = previous_block_hash
-        self.nonce = 0
-        self.hash = self.calculate_hash()
-    
-    def calculate_hash(self):
-        block_data = {
-            "index":self.index,
-            "timestamp":self.timestamp,
-            "sender":self.sender,
-            "receiver":self.receiver,
-            "amount":self.amount,
-            "previous_hash":self.prev_hash,
-            "nonce":self.nonce
-        }
-
-        block_string = json.dumps(block_data, sort_keys=True).encode("utf-8")
-
-        h = SHA256.new()
-        h.update(block_string)
-        return h.hexdigest()
-    
-    def mine(self):
-        while not self.hash.startswith("67"):
-            self.nonce += 1
-            self.hash = self.calculate_hash()
-    
-
-class NFT:
-    def __init__(self, token, owner, url):
-        self.token = token
-        self.owner = owner
-        self.url = url
+from user import User
+from block import Block
 
 class Blockchain:
     def __init__(self):
@@ -137,16 +86,20 @@ class Blockchain:
             print("Amount Sent: " + str(block.amount))
             print("Hash: " + str(block.hash))
             print("Timestamp: " + str(block.timestamp))
-            print("--------")
+            print("-----------------------------")
 
-    def mint_nft(self, owner, url, token):
+    def mint_nft(self, owner, url, token, priv_key):
         if token in self.nftlist:
             print(f"Error: Token {token} already exists!")
             return False
         
-        newNFT = NFT(token, owner, url)
-        self.nftlist[token] = newNFT
-        return True
+        if priv_key == self.users[owner].private_key:
+            newNFT = NFT(token, owner, url)
+            self.nftlist[token] = newNFT
+            print(f"Minted NFT for User {owner}! Token {token}.")
+            return True
+        
+        return False
 
     def get_nft(self, id):
         return self.nftlist.get(id)
@@ -176,7 +129,7 @@ chain.print_chain()
 chain.validate_chain()
 chain.print_balances()
 
-chain.mint_nft("JEAN", "3toadbanana.github.io/nftdata/jean1", 41)
+chain.mint_nft("JEAN", "3toadbanana.github.io/nftdata/jean1", "41")
 
 chain.get_user_nfts("HUDSON")
 chain.get_user_nfts("ADIT")
