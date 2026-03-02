@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import json
 from Crypto.Hash import SHA256
 
