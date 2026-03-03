@@ -4,7 +4,11 @@ from nft import NFT
 
 class Blockchain:
     def __init__(self):
-        self.users = {"SYSTEM":User("SYSTEM")}
+        self.users = {
+            "SYSTEM":User("SYSTEM"),
+            "HUDSON":User("HUDSON"),
+            "ADIT":User("ADIT")
+            }
         self.chain = [self.create_genesis_block()]
         self.users["SYSTEM"].balance = 999999999999999999999
         self.nftlist = {
