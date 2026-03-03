@@ -24,8 +24,11 @@ class Blockchain:
     def add_user(self, username):
         if username not in self.users:
             self.users[username] = User(username)
+            print(f"Added User {username}!")
+            return True
         
-        print(f"Added User {username}! ")
+        print(f"Error: User {username} already exists.")
+        return False
 
     def print_balances(self):
         for user in self.users:
@@ -34,25 +37,27 @@ class Blockchain:
     def add_block(self, sender, receiver, amount, token=None, priv_key=None):
         if sender not in self.users or receiver not in self.users:
             print("Sender or receiver does not exist.")
-            return
+            return False
 
         previous_block = self.get_latest_block()
-        new_block = Block(previous_block.index+1, sender, receiver, amount, previous_block.hash)
+        new_block = Block(previous_block.index+1, sender, receiver, amount, previous_block.hash, token, priv_key)
         new_block.mine()
         if self.validate_block(new_block):
             self.chain.append(new_block)
             print("Valid block added.")
+        
         else:
             print("Invalid block not added")
-            return
+            return False
 
         self.users[sender].balance -= amount
         self.users[receiver].balance += amount
 
         if token in self.nftlist and self.nftlist[token].owner == receiver and priv_key == self.users[receiver].private_key:
             self.nftlist[token].owner = sender
+            return True
         
-        return
+        return False
 
     def validate_block(self, block):
         if block.hash != block.calculate_hash():
@@ -127,19 +132,19 @@ class Blockchain:
 
         return nfts
 
-chain = Blockchain()
-chain.add_user("ADIT")
-chain.add_user("HUDSON")
-chain.add_block("SYSTEM", "ADIT", 200)
-chain.add_block("ADIT", "HUDSON", 100)
+# chain = Blockchain()
+# chain.add_user("ADIT")
+# chain.add_user("HUDSON")
+# chain.add_block("SYSTEM", "ADIT", 200)
+# chain.add_block("ADIT", "HUDSON", 100)
 
-chain.mint_nft("JEAN", "3toadbanana.github.io/nftdata/jean1", "41", "key")
+# chain.mint_nft("JEAN", "3toadbanana.github.io/nftdata/jean1", "41", "key")
 
-chain.get_user_nfts("HUDSON")
-chain.get_user_nfts("ADIT")
-chain.add_block("ADIT", "HUDSON", 20, "67", "key")
-chain.get_user_nfts("HUDSON")
-chain.get_user_nfts("ADIT")
-chain.mint_nft("ADIT", "3toadbanana.github.io/nftdata/adit2", "1235", "key")
+# chain.get_user_nfts("HUDSON")
+# chain.get_user_nfts("ADIT")
+# chain.add_block("ADIT", "HUDSON", 20, "67", "key")
+# chain.get_user_nfts("HUDSON")
+# chain.get_user_nfts("ADIT")
+# chain.mint_nft("ADIT", "3toadbanana.github.io/nftdata/adit2", "1235", "key")
 
-chain.print_chain()
+# chain.print_chain()
