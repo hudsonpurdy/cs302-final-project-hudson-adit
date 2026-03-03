@@ -31,8 +31,8 @@ def cli_loop():
                     
                     chain.add_block(sender, receiver, amount, token, priv_key)
                 
-                except:
-                    print("Error, try again. ")
+                except Exception as e:
+                    print(f"Error, try again. {e}")
 
             elif command == "add":
                 username = args[0]

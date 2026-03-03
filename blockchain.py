@@ -90,17 +90,18 @@ class Blockchain:
 
     def print_chain(self):
         for block in self.chain:
-            print("-----------------------------")
             print("Block Index: " + str(block.index))
             print("Sender: " + str(block.sender))
             print("Receiver: " + str(block.receiver))
             print("Amount Sent: " + str(block.amount))
             print("Hash: " + str(block.hash))
             print("Timestamp: " + str(block.timestamp))
+            print("-----------------------------")
 
     def mint_nft(self, owner, url, token, priv_key):
         if owner not in self.users:
             self.add_user(owner)
+            print(f"Added User {owner}!")
 
         if token in self.nftlist:
             print(f"Error: Token {token} already exists!")
