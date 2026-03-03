@@ -9,6 +9,7 @@ class Blockchain:
             "HUDSON":User("HUDSON"),
             "ADIT":User("ADIT")
             }
+        
         self.chain = [self.create_genesis_block()]
         self.users["SYSTEM"].balance = 999999999999999999999
         self.nftlist = {
