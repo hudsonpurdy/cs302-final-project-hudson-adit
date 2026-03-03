@@ -35,6 +35,8 @@ class Blockchain:
             print(user + ": " + str(self.users[user].balance))
     
     def add_block(self, sender, receiver, amount, token=None, priv_key=None):
+        amount = int(amount)
+        
         if sender not in self.users or receiver not in self.users:
             print("Sender or receiver does not exist.")
             return False

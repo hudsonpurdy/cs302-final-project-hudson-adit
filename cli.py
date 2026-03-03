@@ -21,7 +21,7 @@ def cli_loop():
                 
                 chain.mint_nft(owner, url, token, priv_key)
 
-            elif command == "add_block":
+            elif command == "block":
                 try: 
                     sender = args[0]
                     receiver = args[1]
@@ -34,7 +34,7 @@ def cli_loop():
                 except:
                     print("Error, try again. ")
 
-            elif command == "add_user":
+            elif command == "add":
                 username = args[0]
 
                 chain.add_user(username)
