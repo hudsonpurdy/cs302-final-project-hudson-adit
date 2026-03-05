@@ -1,4 +1,5 @@
 from blockchain import Blockchain
+# talk about hash functions, key, hash 67
 
 def cli_loop():
     chain = Blockchain()
